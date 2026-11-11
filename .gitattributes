@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pkl binary
+*.ipynb text eol=lf
+# Scripts de Windows con fin de línea CRLF
+*.ps1 text eol=crlf
+*.bat text eol=crlf
