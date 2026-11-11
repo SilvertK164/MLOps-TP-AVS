@@ -1,0 +1,6 @@
+# Mismas versiones que el entorno local (requirements.txt): el modelo que se registra en
+# MLflow desde un notebook tiene que poder cargarse en las tareas de Airflow y viceversa.
+mlflow==3.18.0
+boto3==1.44.0
+scikit-learn==1.9.1
+xgboost==3.4.1

@@ -1,0 +1,32 @@
+# Entorno
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# MLflow local (clases y notebooks sin Docker)
+mlruns/
+mlartifacts/
+mlflow.db
+clases/_salidas/
+notebooks/_salidas/
+
+# Airflow: se versionan solo las carpetas (con .gitkeep)
+airflow/logs/*
+!airflow/logs/.gitkeep
+airflow/config/*
+!airflow/config/.gitkeep
+airflow/plugins/*
+!airflow/plugins/.gitkeep
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
