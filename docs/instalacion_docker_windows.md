@@ -25,7 +25,15 @@ Reiniciar cuando lo pida. Para verificar: `wsl --status`.
 ## 3. Docker Desktop
 
 1. Descargar e instalar [Docker Desktop](https://www.docker.com/products/docker-desktop/) y dejar
-   marcada la opción **Use WSL 2**.
+   marcada la opción **Use WSL 2**. También se puede instalar desde una terminal:
+
+   ```powershell
+   winget install --id Docker.DockerDesktop -e
+   ```
+
+   Windows pide permiso de administrador: hay que aceptar el aviso **antes de 2 minutos**, porque si
+   no, el instalador se cancela (en `%LOCALAPPDATA%\Docker\install-log.txt` aparece "El usuario ha
+   cancelado la operación"). Después de instalarlo hay que **reiniciar** o cerrar sesión.
 2. Abrir Docker Desktop y esperar a que diga *Engine running*.
 3. Verificar en una terminal nueva:
 

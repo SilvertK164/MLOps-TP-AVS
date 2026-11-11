@@ -47,3 +47,7 @@ line-length = 110
 select = ["E", "F", "I", "N", "UP", "B"]
 # N803/N806: X, X_train, X_test son la convención de nombres en ML
 ignore = ["N803", "N806"]
+
+[tool.ruff.lint.per-file-ignores]
+# Notebooks didácticos: imports por sección, líneas de texto largas y celdas de ejercicio a completar
+"*.ipynb" = ["E402", "E501", "F401", "F841", "I001"]

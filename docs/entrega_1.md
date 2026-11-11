@@ -19,6 +19,7 @@ lo visto hasta esa clase, y el nivel al que apuntamos es **en contenedores**.
 | 10 | DAG de entrenamiento con los mejores hiperparámetros de MLflow | ✅ código / ⏳ correr en Docker | `airflow/dags/train_burnout.py` |
 | 11 | DAG de predicción por lotes con el champion (clase 5) | ✅ código / ⏳ correr en Docker | `airflow/dags/batch_predict_burnout.py` |
 | 12 | Documentación | ✅ | `README.md`, `docs/`, docstrings, `doc_md` de cada DAG |
+| 13 | Material de estudio del equipo: teoría, casos, ejercicios, tarjetas y cuestionarios por clase | ✅ | `clases/` (C6 = repaso integrador) |
 
 ⏳ = falta verificarlo con Docker. Hoy Docker no está instalado en la máquina donde armamos el repo.
 

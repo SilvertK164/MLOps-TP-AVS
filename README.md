@@ -59,7 +59,7 @@ cualquier máquina o contenedor. Lo explicamos en la clase interactiva C1, §5.
 │   └── secrets/             # variables y conexiones de Airflow
 ├── notebooks/
 │   └── experimento_mlflow_optuna.ipynb   # búsqueda de hiperparámetros registrada en MLflow
-├── clases/                  # clases interactivas: repaso de AMq1 y clases 1 a 5 de MLOps
+├── clases/                  # clases interactivas: repaso de AMq1, clases 1 a 5 y repaso integrador
 ├── tests/                   # pytest: datos, ETL (con S3 falso), modelo y predicción por lotes
 ├── dockerfiles/             # imágenes de Airflow, MLflow, PostgreSQL y FastAPI
 ├── docker-compose.yaml      # el ambiente productivo (basado en amq2-service-ml)
@@ -134,6 +134,7 @@ copia en [LICENSE.amq2-service-ml](LICENSE.amq2-service-ml)). Lo que cambiamos:
 
 ## Clases interactivas
 
-En [clases/](clases/README.md) hay 7 notebooks para aprender con nuestro propio TP: dos de repaso de AMq1
-y uno por cada clase de MLOps hasta la 5. Tienen controles interactivos y ejercicios con verificación
-automática. El análisis del material de la cátedra está en [docs/guia_materia.md](docs/guia_materia.md).
+En [clases/](clases/README.md) hay 8 notebooks para aprender con nuestro propio TP: dos de repaso de AMq1,
+uno por cada clase de MLOps hasta la 5 y un repaso integrador para la entrega. Cada uno tiene teoría con
+diagramas, práctica con controles interactivos, ejercicios con verificación automática, casos de uso
+reales, tarjetas de repaso y un cuestionario final con puntaje. El análisis del material de la cátedra está en [docs/guia_materia.md](docs/guia_materia.md).
