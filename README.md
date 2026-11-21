@@ -18,6 +18,10 @@ productivo el modelo de nuestro TP de Aprendizaje de Máquina I
 **Primera entrega (clase 5)**: el checklist completo está en [docs/entrega_1.md](docs/entrega_1.md).
 Apuntamos al nivel **en contenedores**.
 
+**Alcance de este avance:** se implementan el ETL, el entrenamiento y el registro del modelo, y las
+predicciones por lotes. FastAPI está incluido en Docker como servicio base, pero todavía no expone
+un endpoint para predecir; la API de inferencia y las demás tareas de la segunda entrega están pendientes.
+
 ```
 CSV (data/raw) ──► DAG etl_burnout ──► MinIO s3://data/burnout/{raw,final}
                                             │
@@ -128,7 +132,7 @@ docker compose --profile all up -d
 | Airflow | http://localhost:8080 (airflow / airflow) |
 | MLflow | http://localhost:5001 |
 | MinIO | http://localhost:9001 (minio / minio123) |
-| API | http://localhost:8800/docs |
+| FastAPI (servicio base, sin inferencia) | http://localhost:8800/ (`/docs` documenta solo la ruta de bienvenida) |
 
 Orden de ejecución:
 
