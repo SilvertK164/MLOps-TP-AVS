@@ -1,0 +1,33 @@
+# Integración continua: en cada push y pull request corre el linter y los tests.
+# Es la misma verificación que hacemos a mano antes de commitear (ver README).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Linter (ruff check)
+        run: ruff check .
+
+      # El formato se exige en el código productivo: paquete, DAGs y tests.
+      # Los notebooks de clases/ son material de estudio y no se reformatean.
+      - name: Formato (ruff format)
+        run: ruff format --check src airflow tests
+
+      - name: Tests (pytest)
+        run: pytest -q

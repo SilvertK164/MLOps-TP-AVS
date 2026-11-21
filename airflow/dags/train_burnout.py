@@ -2,7 +2,10 @@
 
 from datetime import timedelta
 
-from airflow.sdk import dag, task
+from airflow.sdk import Asset, dag, task
+
+# Lo publica etl_burnout al dejar el split en MinIO (mismo URI que en ese DAG).
+TRAIN_DATA = Asset("s3://data/burnout/final")
 
 DOC_MD = """
 ### Entrenamiento del modelo de burnout
@@ -13,7 +16,8 @@ DOC_MD = """
 2. Entrena el pipeline (preprocesador + XGBoost) con `s3://data/burnout/final/train/`.
 3. Lo evalúa en test (F1 macro) y lo registra como `burnout_model_prod` con alias `champion`.
 
-Requiere haber corrido antes el DAG `etl_burnout`.
+Se dispara solo cada vez que `etl_burnout` actualiza el *Asset* `s3://data/burnout/final`
+(también se puede disparar a mano).
 """
 
 default_args = {
@@ -28,7 +32,7 @@ default_args = {
     dag_id="train_burnout",
     description="Entrena XGBoost con los mejores hiperparámetros y lo registra como champion",
     doc_md=DOC_MD,
-    schedule=None,
+    schedule=[TRAIN_DATA],
     catchup=False,
     dagrun_timeout=timedelta(minutes=30),
     default_args=default_args,

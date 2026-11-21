@@ -2,7 +2,10 @@
 
 from datetime import timedelta
 
-from airflow.sdk import dag, task
+from airflow.sdk import Asset, dag, task
+
+# Asset que produce este DAG: al actualizarse, Airflow dispara train_burnout.
+TRAIN_DATA = Asset("s3://data/burnout/final")
 
 DOC_MD = """
 ### ETL del dataset de burnout
@@ -13,6 +16,9 @@ genera el split 80/20 estratificado (semilla 42) en `s3://data/burnout/final/`.
 
 Al final guarda `s3://data/burnout/data_info/data.json` con el esquema y registra los datasets
 en MLflow (experimento *Burnout Risk*), para que cada entrenamiento sepa con qué datos se hizo.
+
+La tarea `split` publica el *Asset* `s3://data/burnout/final`: cuando termina bien, Airflow
+dispara automáticamente el DAG `train_burnout`.
 """
 
 default_args = {
@@ -49,7 +55,7 @@ def etl_burnout():
 
         return etl.validate_raw(raw_uri)
 
-    @task
+    @task(outlets=[TRAIN_DATA])
     def split(summary: dict) -> dict:
         """Genera el split 80/20 estratificado y lo guarda en ``final/``."""
         from burnout import etl
