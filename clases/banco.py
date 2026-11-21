@@ -308,8 +308,8 @@ PREGUNTAS = {
         ("¿Por qué el TP fija `XGB_N_JOBS = 4` en lugar de usar `n_jobs=-1`?",
          ["Para entrenar más rápido", "Porque con `hist` la cantidad de hilos cambia levemente el resultado",
           "Porque Docker solo tiene 4 CPUs", "Por una regla de PEP 8"], 1,
-         "El orden de las sumas de punto flotante depende de los hilos; fijarlos da el mismo modelo en "
-         "cualquier máquina."),
+         "El orden de las sumas de punto flotante depende de los hilos; fijarlos da siempre el mismo "
+         "modelo en un mismo entorno (entre Windows y Linux queda una diferencia de hasta 0,002)."),
         ("¿Cuál es el flujo recomendado para que dos integrantes trabajen en paralelo?",
          ["Editar los dos en `main`", "Una rama cada uno y Pull Requests revisados",
           "Turnarse por días", "Copiar el repo en un pendrive"], 1,

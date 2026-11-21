@@ -23,7 +23,7 @@ CSV (data/raw) ──► DAG etl_burnout ──► MinIO s3://data/burnout/{raw,
                                             │
             notebook experimento_mlflow_optuna (Optuna, 40 pruebas) ──► MLflow
                                             │                         │
-                         DAG train_burnout ─┴──► burnout_model_prod@champion
+     (Asset s3://data/burnout/final) ──► DAG train_burnout ──► burnout_model_prod@champion
                                                                        │
                       DAG batch_predict_burnout (@daily) ──► s3://data/burnout/batch/predictions.csv
 ```
@@ -37,11 +37,23 @@ CSV (data/raw) ──► DAG etl_burnout ──► MinIO s3://data/burnout/{raw,
 | Features | 12: hábitos de uso de IA y contexto. Excluimos `Post_Semester_GPA` y `Skill_Retention_Score` por fuga de información |
 | Modelo | Preprocesador (ordinal + one-hot) + XGBoost con los hiperparámetros que encontró Optuna en AMq1 |
 | Métrica | F1 macro en test: **0,5365** con los hiperparámetros de AMq1 (AMq1 informó 0,5405; IC 95 % de 0,531 a 0,550) |
-| Búsqueda en MLflow | 40 pruebas de Optuna con runs anidados: mejor F1 macro en CV 0,5382 y en test **0,5362**, con otros hiperparámetros. El techo práctico es el mismo |
+| Búsqueda en MLflow | 40 pruebas de Optuna con runs anidados: mejor F1 macro en CV 0,5382 y en test **0,5362** (Windows) / **0,5380** (contenedor de Airflow), con otros hiperparámetros. El techo práctico es el mismo |
 
 ¿Por qué no da exactamente 0,5405? XGBoost (`hist`) da resultados levemente distintos según la cantidad
-de hilos, y en AMq1 usamos `n_jobs=-1`. Ahora fijamos `XGB_N_JOBS = 4`, así el resultado es el mismo en
-cualquier máquina o contenedor. Lo explicamos en la clase interactiva C1, §5.
+de hilos y el sistema operativo, y en AMq1 usamos `n_jobs=-1`. Ahora fijamos `XGB_N_JOBS = 4`, así cada
+entorno da siempre el mismo resultado. Lo explicamos en la clase interactiva C1, §5.
+
+Lo medimos con los mismos datos y los mismos hiperparámetros (la mejor prueba de Optuna):
+
+| Entorno | 4 hilos | 1 hilo |
+|---|---|---|
+| Windows 11 (entorno local) | 0,5362 | 0,5381 |
+| Linux (contenedor de Airflow) | 0,5380 | 0,5380 |
+
+En el contenedor, que es el ambiente productivo, el resultado no depende de la cantidad de hilos. Entre
+sistemas operativos hay una diferencia de hasta 0,002, muy por debajo del ancho del IC 95 % (±0,01): no
+cambia ninguna conclusión, pero por eso el F1 que registra el DAG `train_burnout` no es idéntico al del
+notebook corrido en Windows.
 
 ## Estructura
 
@@ -61,6 +73,7 @@ cualquier máquina o contenedor. Lo explicamos en la clase interactiva C1, §5.
 │   └── experimento_mlflow_optuna.ipynb   # búsqueda de hiperparámetros registrada en MLflow
 ├── clases/                  # clases interactivas: repaso de AMq1, clases 1 a 5 y repaso integrador
 ├── tests/                   # pytest: datos, ETL (con S3 falso), modelo y predicción por lotes
+├── .github/workflows/       # CI: linter y tests en cada push
 ├── dockerfiles/             # imágenes de Airflow, MLflow, PostgreSQL y FastAPI
 ├── docker-compose.yaml      # el ambiente productivo (basado en amq2-service-ml)
 ├── data/raw/                # CSV original (no se edita)
@@ -92,6 +105,9 @@ python -m burnout.train      # entrena y evalúa el modelo final
 jupyter lab                  # clases/ y notebooks/
 ```
 
+En cada push y pull request, GitHub Actions corre `ruff check`, `ruff format --check` y `pytest`
+([.github/workflows/ci.yml](.github/workflows/ci.yml)).
+
 El notebook `notebooks/experimento_mlflow_optuna.ipynb` funciona sin Docker: usa un MLflow local con
 SQLite. Para ver la UI:
 
@@ -116,10 +132,24 @@ docker compose --profile all up -d
 
 Orden de ejecución:
 
-1. Disparar el DAG `etl_burnout`.
-2. Correr `notebooks/experimento_mlflow_optuna.ipynb`. Detecta Docker y registra en el MLflow del compose.
-3. Disparar `train_burnout`.
-4. Disparar `batch_predict_burnout`.
+1. Activar `etl_burnout` y `train_burnout` en la UI de Airflow (los DAGs se crean pausados).
+2. Disparar el DAG `etl_burnout`. Al terminar publica el *Asset* `s3://data/burnout/final` y Airflow
+   dispara solo `train_burnout`.
+3. (Opcional, para usar los hiperparámetros de la búsqueda) Correr
+   `notebooks/experimento_mlflow_optuna.ipynb`: detecta Docker y registra en el MLflow del compose. Después
+   volver a disparar `train_burnout`, que toma la mejor prueba de Optuna.
+4. Cuando ya hay un modelo `champion`, activar `batch_predict_burnout`: corre todos los días (al activarlo
+   corre una vez enseguida).
+
+Lo mismo desde la terminal:
+
+```bash
+docker exec airflow-apiserver airflow dags unpause etl_burnout
+docker exec airflow-apiserver airflow dags unpause train_burnout
+docker exec airflow-apiserver airflow dags trigger etl_burnout
+# cuando train_burnout terminó:
+docker exec airflow-apiserver airflow dags unpause batch_predict_burnout
+```
 
 ### Diferencias con el repositorio base de la cátedra
 

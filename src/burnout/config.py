@@ -79,6 +79,8 @@ BEST_PARAMS_AMQ1 = {
 # Hilos de XGBoost fijos: con tree_method="hist" el resultado cambia levemente según la
 # cantidad de hilos (el orden de las sumas de punto flotante). Con n_jobs=-1, una laptop y
 # un contenedor con otra cantidad de CPUs darían F1 distintos (vimos de 0,5358 a 0,5380).
+# Fijarlos hace que cada entorno sea reproducible; entre Windows y Linux igual queda una
+# diferencia de hasta 0,002 (ver la tabla en el README).
 XGB_N_JOBS = 4
 
 # --- MLflow ------------------------------------------------------------------
