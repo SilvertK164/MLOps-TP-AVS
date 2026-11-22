@@ -39,8 +39,8 @@ CSV (data/raw) ──► DAG etl_burnout ──► MinIO s3://data/burnout/{raw,
 | Dataset | [Impact of AI on Students](https://www.kaggle.com/datasets/laveshjadon/ai-impact-on-students) (Kaggle, CC0), 50.000 estudiantes. Diccionario en [data/README.md](data/README.md) |
 | Objetivo | `Burnout_Risk_Level`: clasificación en 3 clases |
 | Features | 12: hábitos de uso de IA y contexto. Excluimos `Post_Semester_GPA` y `Skill_Retention_Score` por fuga de información |
-| Modelo | Preprocesador (ordinal + one-hot) + XGBoost con los hiperparámetros que encontró Optuna en AMq1 |
-| Métrica | F1 macro en test: **0,5365** con los hiperparámetros de AMq1 (AMq1 informó 0,5405; IC 95 % de 0,531 a 0,550) |
+| Modelo | Preprocesador (ordinal + one-hot) + XGBoost. El champion en producción usa los hiperparámetros de la nueva búsqueda en MLflow (`trial_36`) |
+| Métrica | F1 macro en test del champion: **0,5380** en el contenedor de Airflow. Con los hiperparámetros de AMq1 da 0,5365 (AMq1 informó 0,5405; IC 95 % de 0,531 a 0,550) |
 | Búsqueda en MLflow | 40 pruebas de Optuna con runs anidados: mejor F1 macro en CV 0,5382 y en test **0,5362** (Windows) / **0,5380** (contenedor de Airflow), con otros hiperparámetros. El techo práctico es el mismo |
 
 ¿Por qué no da exactamente 0,5405? XGBoost (`hist`) da resultados levemente distintos según la cantidad
